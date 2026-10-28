@@ -1,7 +1,7 @@
+import { SocialButton } from "@/components/brand/SocialButton";
 import ULThemeSocialProviderButton from "@/components/ULThemeSocialProviderButton";
 import { getIcon } from "@/utils/helpers/iconUtils";
 import type { SocialConnection } from "@/utils/helpers/socialUtils";
-import { getSocialProviderDetails } from "@/utils/helpers/socialUtils";
 
 import { useLoginIdManager } from "../hooks/useLoginIdManager";
 
@@ -10,7 +10,6 @@ const AlternativeLogins = () => {
     texts,
     locales,
     isPasskeyEnabled,
-    showPasskeyAutofill,
     alternateConnections,
     handleFederatedLogin,
     handlePasskeyLogin,
@@ -29,9 +28,7 @@ const AlternativeLogins = () => {
     handleFederatedLogin(federatedLoginOptions);
   };
 
-  // Only show passkey button if passkeys are enabled AND autofill is NOT active
-  // When showPasskeyAutofill is true, passkey selection happens via input autocomplete
-  const showPasskeyButton = isPasskeyEnabled && !showPasskeyAutofill;
+  const showPasskeyButton = isPasskeyEnabled;
 
   return (
     <>
@@ -50,15 +47,11 @@ const AlternativeLogins = () => {
             return null;
           }
 
-          const { displayName, iconComponent } =
-            getSocialProviderDetails(connection);
-          const socialButtonText = `${locales?.alternativeLogins?.continueWithText} ${displayName}`;
           return (
-            <ULThemeSocialProviderButton
+            <SocialButton
               key={connection.name}
-              displayName={displayName}
-              buttonText={socialButtonText}
-              iconComponent={iconComponent}
+              connection={connection}
+              continueWith={locales.alternativeLogins.continueWithText}
               onClick={() => handleConnectionLogin(connection)}
             />
           );

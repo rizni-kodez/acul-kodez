@@ -39,7 +39,9 @@ describe("SignupIdScreen", () => {
     expect(
       screen.getByRole("button", { name: CommonTestData.commonTexts.continue })
     ).toBeInTheDocument();
-    expect(screen.getByText(/Sign up to dev-tenant/)).toBeInTheDocument();
+    expect(
+      screen.getByText("Enter your details to get started.")
+    ).toBeInTheDocument();
   });
 
   it("should render identifier fields with proper labels", async () => {

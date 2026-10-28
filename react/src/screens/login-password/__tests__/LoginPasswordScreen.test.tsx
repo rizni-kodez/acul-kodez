@@ -4,7 +4,13 @@ import {
   useScreen,
   useTransaction,
 } from "@auth0/auth0-acul-react/login-password";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 
 import { useCaptcha } from "@/hooks/useCaptcha";
 import { CommonTestData } from "@/test/fixtures/common-data";
@@ -128,6 +134,26 @@ describe("LoginPasswordScreen", () => {
       "href",
       expect.stringContaining("/u/login/password-reset-start/")
     );
+  });
+
+  it("shows the identity and supports password visibility and caps-lock warning", async () => {
+    await renderScreen();
+    expect(screen.getByText("testuser@testdomain.com")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Edit" })).toHaveAttribute(
+      "href",
+      "/u/login/identifier?state=mocked_state123"
+    );
+    const password = screen.getByLabelText("Password");
+    const toggle = screen.getByRole("button", { name: "Show password" });
+    fireEvent.click(toggle);
+    expect(password).toHaveAttribute("type", "text");
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
+    const keyDown = createEvent.keyDown(password, { key: "A" });
+    Object.defineProperty(keyDown, "getModifierState", {
+      value: (key: string) => key === "CapsLock",
+    });
+    fireEvent(password, keyDown);
+    expect(screen.getByRole("status")).toHaveTextContent("Caps Lock is on.");
   });
 
   it("should have a signup link", async () => {

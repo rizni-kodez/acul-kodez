@@ -1,11 +1,12 @@
 {
+    "pageTitle": "Sign in",
     "page": {
         "title": "Login",
         "orText": "OR"
     },
     "heading": {
-        "title": "Welcome",
-        "description": "Log in to continue",
+        "title": "Welcome to Kodez",
+        "description": "Sign in to continue.",
         "logoAltText": "Application Logo"
     },
     "footer": {

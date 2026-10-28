@@ -37,7 +37,7 @@ export const useSignupIdManager = () => {
       options.captcha = payload.captcha.trim();
     }
 
-    executeSafely(`Signup with options: ${JSON.stringify(options)}`, () =>
+    await executeSafely(`Signup with options: ${JSON.stringify(options)}`, () =>
       signupId.signup(options)
     );
   };

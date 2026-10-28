@@ -1,0 +1,22 @@
+{
+  "client": {
+    "id": "demo-client",
+    "name": "Demo App"
+  },
+  "prompt": {
+    "name": "reset-password"
+  },
+  "screen": {
+    "name": "reset-password-success"
+  },
+  "transaction": {
+    "locale": "en",
+    "state": "demo-state",
+    "errors": [
+      {
+        "code": "invalid_request",
+        "message": "Something went wrong. Please try again."
+      }
+    ]
+  }
+}

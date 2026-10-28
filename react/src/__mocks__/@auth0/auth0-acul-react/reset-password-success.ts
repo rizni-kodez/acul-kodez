@@ -1,5 +1,11 @@
 export const useResetPasswordSuccess = jest.fn(() => ({}));
 
+export const useErrors = jest.fn(() => ({
+  errors: { byType: jest.fn(() => []) },
+  hasError: false,
+  dismiss: jest.fn(),
+}));
+
 export const useScreen = jest.fn(() => ({
   name: "reset-password-success",
   texts: {

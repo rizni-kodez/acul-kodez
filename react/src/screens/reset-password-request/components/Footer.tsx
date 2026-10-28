@@ -1,9 +1,14 @@
+import { useScreen } from "@auth0/auth0-acul-react/reset-password-request";
+
 import { ULThemeButton } from "@/components/ULThemeButton";
+import ULThemeLink from "@/components/ULThemeLink";
 
 import { useResetPasswordRequestManager } from "../hooks/resetPasswordRequestManager";
 function Footer() {
   const { texts, handleBackToLogin, locales } =
     useResetPasswordRequestManager();
+  const { links } = useScreen();
+  const backLink = links?.backToLogin || links?.back_to_login;
 
   const returnToPreviousScreenText =
     texts?.backToLoginLinkText || locales.footer.backButton;
@@ -13,11 +18,15 @@ function Footer() {
   };
 
   return (
-    <div className="text-center space-y-2 mt-4">
+    <div>
       {/* Go Back Action */}
-      <ULThemeButton onClick={handleGoBackAction} variant="link" size="link">
-        {returnToPreviousScreenText}
-      </ULThemeButton>
+      {backLink ? (
+        <ULThemeLink href={backLink}>{returnToPreviousScreenText}</ULThemeLink>
+      ) : (
+        <ULThemeButton onClick={handleGoBackAction} variant="link" size="link">
+          {returnToPreviousScreenText}
+        </ULThemeButton>
+      )}
     </div>
   );
 }

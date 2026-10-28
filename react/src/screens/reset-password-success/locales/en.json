@@ -1,7 +1,11 @@
 {
   "pageTitle": "Password reset successful",
   "header": {
+    "logoAlt": "Application logo",
     "title": "Password Changed!",
     "description": "Your password has been changed successfully."
+  },
+  "footer": {
+    "continue": "Continue to login"
   }
 }

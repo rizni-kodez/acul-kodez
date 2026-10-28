@@ -23,7 +23,8 @@ function Header() {
         color={themedLogoWidgetColorValue}
         size={80}
         strokeWidth={1}
-        className="flex flex-wrap justify-widget-logo ml-28"
+        className="mx-auto mb-4"
+        aria-hidden="true"
       />
       <ULThemeTitle>{titleText}</ULThemeTitle>
       <ULThemeSubtitle className="mb-6">{descriptionText}</ULThemeSubtitle>

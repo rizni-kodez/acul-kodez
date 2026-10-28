@@ -2,10 +2,10 @@
   "client": {
     "id": "ynAQdpx1JBSCbPkXd1nbDpF9",
     "logo_uri": "https://disloyal-merit.net",
-    "name": "Marvin - Klein"
+    "name": "Demo App"
   },
   "organization": {
-    "display_name": "Stoltenberg Inc",
+    "display_name": "Kodez",
     "id": "org_8SOzFEX4jIuGtY5VQcAJrcuN",
     "name": "hoppe-inc",
     "usage": "allow"
@@ -34,6 +34,12 @@
     "name": "stanton-inc"
   },
   "transaction": {
+    "alternate_connections": [
+      {
+        "name": "google-oauth2",
+        "strategy": "google-oauth2"
+      }
+    ],
     "connection": {
       "name": "agnosco",
       "options": {
@@ -93,6 +99,7 @@
   },
   "untrusted_data": {
     "authorization_params": {
+      "login_hint": "demo.user@example.com",
       "screen_hint": "signup",
       "ui_locales": "en"
     },

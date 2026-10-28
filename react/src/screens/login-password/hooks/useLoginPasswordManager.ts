@@ -50,7 +50,7 @@ export const useLoginPasswordManager = () => {
       password: "[REDACTED]",
     };
 
-    executeSafely(
+    await executeSafely(
       `Perform login password operation with options: ${JSON.stringify(logOptions)}`,
       () => loginPassword.login(options)
     );

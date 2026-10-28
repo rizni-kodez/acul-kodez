@@ -13,13 +13,13 @@ import type {
   UsernameValidationResult,
 } from "@auth0/auth0-acul-react/types";
 
+import { BrandButton } from "@/components/brand/BrandButton";
+import { BrandInput } from "@/components/brand/BrandInput";
+import { ErrorBanner } from "@/components/brand/ErrorBanner";
+import { useFocusErrors } from "@/components/brand/useFocusErrors";
 import Captcha from "@/components/Captcha/index";
-import { ULThemeFloatingLabelField } from "@/components/form/ULThemeFloatingLabelField";
-import { ULThemeFormMessage } from "@/components/form/ULThemeFormMessage";
 import { Form, FormField, FormItem } from "@/components/ui/form";
-import { ULThemeButton } from "@/components/ULThemeButton";
 import ULThemeCountryCodePicker from "@/components/ULThemeCountryCodePicker";
-import { ULThemeAlert, ULThemeAlertTitle } from "@/components/ULThemeError";
 import { useCaptcha } from "@/hooks/useCaptcha";
 import { transformAuth0CountryCode } from "@/utils/helpers/countryUtils";
 import { getIndividualIdentifierDetails } from "@/utils/helpers/identifierUtils";
@@ -39,6 +39,7 @@ function SignupIdForm() {
   } = useSignupIdManager();
 
   const { errors, hasError, dismiss } = useErrors();
+  const formRef = useFocusErrors(hasError);
 
   const form = useForm<SignupOptions>({
     defaultValues: {
@@ -136,15 +137,13 @@ function SignupIdForm() {
         }}
         render={({ field, fieldState }) => (
           <FormItem>
-            <ULThemeFloatingLabelField
+            <BrandInput
               {...field}
               label={label}
               type={type}
               autoComplete={autoComplete}
               error={!!fieldState.error || !!sdkError}
-            />
-            <ULThemeFormMessage
-              sdkError={sdkError}
+              errorMessage={sdkError}
               hasFormError={!!fieldState.error}
             />
           </FormItem>
@@ -181,18 +180,16 @@ function SignupIdForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
         {/* General alerts at the top */}
         {hasError && generalErrors.length > 0 && (
           <div className="space-y-3 mb-4">
             {generalErrors.map((error) => (
-              <ULThemeAlert
+              <ErrorBanner
                 key={error.id}
-                variant="destructive"
                 onDismiss={() => dismiss(error.id)}
-              >
-                <ULThemeAlertTitle>{error.message}</ULThemeAlertTitle>
-              </ULThemeAlert>
+                message={error.message}
+              />
             ))}
           </div>
         )}
@@ -218,9 +215,9 @@ function SignupIdForm() {
         )}
 
         {/* Submit button */}
-        <ULThemeButton type="submit" className="w-full" disabled={isSubmitting}>
+        <BrandButton type="submit" fullWidth loading={isSubmitting}>
           {buttonText}
-        </ULThemeButton>
+        </BrandButton>
       </form>
     </Form>
   );

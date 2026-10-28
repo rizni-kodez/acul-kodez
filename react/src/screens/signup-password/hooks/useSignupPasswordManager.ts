@@ -16,7 +16,7 @@ export const useSignupPasswordManager = () => {
 
   const screen: ScreenMembersOnSignupPassword = useScreen();
 
-  const { isCaptchaAvailable, texts, editLink, captcha } = screen;
+  const { isCaptchaAvailable, texts, editLink, captcha, data } = screen;
 
   const handleSignupPassword = async (
     payload: SignupPasswordOptions
@@ -43,7 +43,7 @@ export const useSignupPasswordManager = () => {
       password: "[REDACTED]",
     };
 
-    executeSafely(
+    await executeSafely(
       `Signup password with options: ${JSON.stringify(logOptions)}`,
       () => signupPassword.signup(options)
     );
@@ -55,6 +55,7 @@ export const useSignupPasswordManager = () => {
     texts,
     isCaptchaAvailable,
     editLink,
+    data,
     captcha,
     locales,
   };

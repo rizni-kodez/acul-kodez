@@ -10,13 +10,13 @@ import type {
   SignupPasswordOptions,
 } from "@auth0/auth0-acul-react/types";
 
+import { BrandButton } from "@/components/brand/BrandButton";
+import { ErrorBanner } from "@/components/brand/ErrorBanner";
+import { IdentityChip } from "@/components/brand/IdentityChip";
+import { PasswordInput } from "@/components/brand/PasswordInput";
+import { useFocusErrors } from "@/components/brand/useFocusErrors";
 import Captcha from "@/components/Captcha/index";
-import { ULThemeFloatingLabelField } from "@/components/form/ULThemeFloatingLabelField";
-import { ULThemeFormMessage } from "@/components/form/ULThemeFormMessage";
 import { Form, FormField, FormItem } from "@/components/ui/form";
-import { ULThemeButton } from "@/components/ULThemeButton";
-import { ULThemeAlert, ULThemeAlertTitle } from "@/components/ULThemeError";
-import { ULThemePasswordField } from "@/components/ULThemePasswordField";
 import { ULThemePasswordValidator } from "@/components/ULThemePasswordValidator";
 import { useCaptcha } from "@/hooks/useCaptcha";
 
@@ -30,9 +30,12 @@ function SignupPasswordForm() {
     texts,
     captcha,
     locales,
+    editLink,
+    data: screenData,
   } = useSignupPasswordManager();
 
   const { errors, hasError, dismiss } = useErrors();
+  const formRef = useFocusErrors(hasError);
 
   const form = useForm<SignupPasswordOptions>({
     defaultValues: {
@@ -52,16 +55,16 @@ function SignupPasswordForm() {
 
   // Get password validation rules from Auth0 SDK
   const passwordValue = watch("password");
-  const {
-    isValid: isPasswordValid,
-    results: passwordResults,
-  }: PasswordValidationResult = usePasswordValidation(passwordValue);
+  const { results: passwordResults }: PasswordValidationResult =
+    usePasswordValidation(passwordValue);
 
   // Get user data from screen data for readonly fields
-  const screenData = signupPassword?.screen?.data;
   const userEmail = screenData?.email;
   const userPhone = screenData?.phoneNumber;
   const userUsername = screenData?.username;
+  const submittedEmail = signupPassword.untrustedData?.submittedFormData?.email;
+  const identityEmail =
+    userEmail || (typeof submittedEmail === "string" ? submittedEmail : "");
 
   // Use locale strings with fallback to SDK texts
   const buttonText = texts?.buttonText || locales.form.button;
@@ -73,10 +76,6 @@ function SignupPasswordForm() {
     : `${locales.form.fields.password.label}*`;
   const passwordSecurityText =
     texts?.passwordSecurityText || locales.form.passwordSecurity;
-  const emailLabel = texts?.emailPlaceholder || locales.form.fields.email.label;
-  const phoneLabel = texts?.phonePlaceholder || locales.form.fields.phone.label;
-  const usernameLabel =
-    texts?.usernamePlaceholder || locales.form.fields.username.label;
 
   // Setup captcha with useCaptcha hook
   const { captchaConfig, captchaProps } = useCaptcha(
@@ -86,9 +85,6 @@ function SignupPasswordForm() {
 
   // Get general errors (not field-specific) and errors for hidden fields
   const visibleFields = ["password", "captcha"];
-  if (userEmail) visibleFields.push("email");
-  if (userPhone) visibleFields.push("phone", "phone_number");
-  if (userUsername) visibleFields.push("username");
 
   const generalErrors: ErrorItem[] = errors.byType("auth0").filter((error) => {
     // Include errors with no field or null field
@@ -115,55 +111,44 @@ function SignupPasswordForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
         {/* General alerts at the top */}
         {hasError && generalErrors.length > 0 && (
           <div className="space-y-3 mb-4">
             {generalErrors.map((error) => (
-              <ULThemeAlert
+              <ErrorBanner
                 key={error.id}
-                variant="destructive"
                 onDismiss={() => dismiss(error.id)}
-              >
-                <ULThemeAlertTitle>{error.message}</ULThemeAlertTitle>
-              </ULThemeAlert>
+                message={error.message}
+              />
             ))}
           </div>
         )}
 
         {/* Readonly email field */}
-        {userEmail && (
-          <ULThemeFloatingLabelField
-            id="signup-email-field"
-            label={emailLabel}
-            type="email"
-            value={userEmail}
-            readOnly
-            disabled
+        {identityEmail && (
+          <IdentityChip
+            identity={identityEmail}
+            editLink={editLink}
+            editText={texts?.editEmailText || locales.form.edit}
           />
         )}
 
         {/* Readonly phone field */}
         {userPhone && (
-          <ULThemeFloatingLabelField
-            id="signup-phone-field"
-            label={phoneLabel}
-            type="tel"
-            value={userPhone}
-            readOnly
-            disabled
+          <IdentityChip
+            identity={userPhone}
+            editLink={editLink}
+            editText={texts?.editEmailText || locales.form.edit}
           />
         )}
 
         {/* Readonly username field */}
         {userUsername && (
-          <ULThemeFloatingLabelField
-            id="signup-username-field"
-            label={usernameLabel}
-            type="text"
-            value={userUsername}
-            readOnly
-            disabled
+          <IdentityChip
+            identity={userUsername}
+            editLink={editLink}
+            editText={texts?.editEmailText || locales.form.edit}
           />
         )}
 
@@ -173,23 +158,15 @@ function SignupPasswordForm() {
           name="password"
           rules={{
             required: locales.form.fields.password.required,
-            validate: (value) => {
-              if (!value) return locales.form.fields.password.required;
-              if (!isPasswordValid)
-                return locales.form.fields.password.doesNotMeetRequirements;
-              return true;
-            },
           }}
           render={({ field, fieldState }) => (
             <FormItem>
-              <ULThemePasswordField
+              <PasswordInput
                 {...field}
                 label={passwordLabel}
                 error={!!fieldState.error || !!passwordError}
                 autoFocus={true}
-              />
-              <ULThemeFormMessage
-                sdkError={passwordError}
+                errorMessage={passwordError}
                 hasFormError={!!fieldState.error}
               />
             </FormItem>
@@ -214,14 +191,13 @@ function SignupPasswordForm() {
         <ULThemePasswordValidator
           validationRules={passwordResults}
           passwordSecurityText={passwordSecurityText}
-          show={!!passwordValue}
           className="mb-4"
         />
 
         {/* Submit button */}
-        <ULThemeButton type="submit" className="w-full" disabled={isSubmitting}>
+        <BrandButton type="submit" fullWidth loading={isSubmitting}>
           {buttonText}
-        </ULThemeButton>
+        </BrandButton>
       </form>
     </Form>
   );

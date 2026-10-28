@@ -5,11 +5,11 @@ import type {
   PasswordValidationResult,
 } from "@auth0/auth0-acul-react/types";
 
-import { ULThemeFormMessage } from "@/components/form";
+import { BrandButton } from "@/components/brand/BrandButton";
+import { ErrorBanner } from "@/components/brand/ErrorBanner";
+import { PasswordInput } from "@/components/brand/PasswordInput";
+import { useFocusErrors } from "@/components/brand/useFocusErrors";
 import { Form, FormField, FormItem } from "@/components/ui/form";
-import { ULThemeButton } from "@/components/ULThemeButton";
-import { ULThemeAlert, ULThemeAlertTitle } from "@/components/ULThemeError";
-import { ULThemePasswordField } from "@/components/ULThemePasswordField";
 import { ULThemePasswordValidator } from "@/components/ULThemePasswordValidator";
 
 import { useResetPasswordManager } from "../hooks/useResetPasswordManager";
@@ -36,6 +36,7 @@ function ResetPasswordForm() {
     usePasswordValidation,
   } = useResetPasswordManager();
   const { errors, hasError, dismiss } = useErrors;
+  const formRef = useFocusErrors(hasError);
 
   // Initialize the form using react-hook-form
   const form = useForm<resetPasswordFormData>({
@@ -53,10 +54,8 @@ function ResetPasswordForm() {
   // Get password validation rules from Auth0 SDK
   const passwordValue = watch("new_password");
 
-  const {
-    isValid: isPasswordValid,
-    results: passwordResults,
-  }: PasswordValidationResult = usePasswordValidation(passwordValue);
+  const { results: passwordResults }: PasswordValidationResult =
+    usePasswordValidation(passwordValue);
 
   // Handle text fallbacks for button and field labels
   const buttonText = texts?.buttonText || locales.form.buttonText;
@@ -75,7 +74,10 @@ function ResetPasswordForm() {
     }) || [];
 
   // Extract field-specific errors for password
-  const passwordSDKError = errors.byField("password")[0]?.message;
+  const passwordSDKError =
+    errors.byField("password-reset")[0]?.message ||
+    errors.byField("password")[0]?.message;
+  const confirmSDKError = errors.byField("re-enter-password")[0]?.message;
 
   /**
    * Handles form submission.
@@ -88,18 +90,16 @@ function ResetPasswordForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
         {/* General error messages */}
         {hasError && generalErrors.length > 0 && (
           <div className="space-y-3 mb-4">
             {generalErrors.map((error: ErrorItem) => (
-              <ULThemeAlert
+              <ErrorBanner
                 key={error.id}
-                variant="destructive"
                 onDismiss={() => dismiss(error.id)}
-              >
-                <ULThemeAlertTitle>{error.message}</ULThemeAlertTitle>
-              </ULThemeAlert>
+                message={error.message}
+              />
             ))}
           </div>
         )}
@@ -110,22 +110,17 @@ function ResetPasswordForm() {
           name="new_password"
           rules={{
             required: locales.form.fields.password.required,
-            validate: (value) => {
-              if (!value) return locales.form.fields.password.required;
-              if (!isPasswordValid)
-                return locales.form.fields.password.doesNotMeetRequirements;
-              return true;
-            },
           }}
           render={({ field, fieldState }) => (
             <FormItem>
-              <ULThemePasswordField
+              <PasswordInput
                 {...field}
                 label={`${passwordLabel}*`}
                 autoComplete="new-password"
                 error={!!fieldState.error || !!passwordSDKError}
+                errorMessage={passwordSDKError}
+                hasFormError={!!fieldState.error}
               />
-              <ULThemeFormMessage hasFormError={!!fieldState.error} />
             </FormItem>
           )}
         />
@@ -136,14 +131,12 @@ function ResetPasswordForm() {
           name="confirm_password"
           render={({ field, fieldState }) => (
             <FormItem>
-              <ULThemePasswordField
+              <PasswordInput
                 {...field}
                 label={`${confirmPasswordLabel}*`}
                 autoComplete="new-password"
-                error={!!fieldState.error || !!passwordSDKError}
-              />
-              <ULThemeFormMessage
-                sdkError={passwordSDKError}
+                error={!!fieldState.error || !!confirmSDKError}
+                errorMessage={confirmSDKError}
                 hasFormError={!!fieldState.error}
               />
             </FormItem>
@@ -154,14 +147,13 @@ function ResetPasswordForm() {
         <ULThemePasswordValidator
           validationRules={passwordResults}
           passwordSecurityText={passwordSecurityText}
-          show={!!passwordValue}
           className="mb-4"
         />
 
         {/* Submit button */}
-        <ULThemeButton type="submit" className="w-full" disabled={isSubmitting}>
+        <BrandButton type="submit" fullWidth loading={isSubmitting}>
           {buttonText}
-        </ULThemeButton>
+        </BrandButton>
       </form>
     </Form>
   );

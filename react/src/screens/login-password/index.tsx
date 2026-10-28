@@ -1,5 +1,5 @@
-import ULThemeCard from "@/components/ULThemeCard";
-import ULThemePageLayout from "@/components/ULThemePageLayout";
+import { BrandLayout } from "@/components/brand/BrandLayout";
+import { StepIndicator } from "@/components/brand/StepIndicator";
 import ULThemeSeparator from "@/components/ULThemeSeparator";
 import { extractTokenValue } from "@/utils/helpers/tokenUtils";
 import { applyAuth0Theme } from "@/utils/theme/themeEngine";
@@ -20,7 +20,7 @@ function LoginPasswordScreen() {
 
   // Use locale strings as fallback to SDK texts
   const separatorText = texts?.separatorText || locales?.page?.orText;
-  document.title = texts?.pageTitle || locales?.page?.title;
+  document.title = texts?.pageTitle || locales.pageTitle;
 
   // Apply theme from SDK instance when screen loads
   applyAuth0Theme(loginPassword);
@@ -44,15 +44,19 @@ function LoginPasswordScreen() {
 
   return (
     // Applying UDS theme overrides using the "theme-universal" class
-    <ULThemePageLayout className="theme-universal">
-      <ULThemeCard className="w-full max-w-[400px] gap-0">
-        <Header />
-        {socialLoginAlignment === "top" && renderSocialLogins("top")}
-        <LoginPasswordForm />
-        <Footer />
-        {socialLoginAlignment === "bottom" && renderSocialLogins("bottom")}
-      </ULThemeCard>
-    </ULThemePageLayout>
+    <BrandLayout
+      client={loginPassword.client}
+      organization={loginPassword.organization}
+      transaction={loginPassword.transaction}
+      logoAltText={texts?.logoAltText || locales.heading.logoAltText}
+      footer={<Footer />}
+    >
+      <StepIndicator step={2} total={2} />
+      <Header />
+      {socialLoginAlignment === "top" && renderSocialLogins("top")}
+      <LoginPasswordForm />
+      {socialLoginAlignment === "bottom" && renderSocialLogins("bottom")}
+    </BrandLayout>
   );
 }
 

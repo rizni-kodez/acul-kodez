@@ -11,12 +11,13 @@ import locales from "../locales/en.json";
  *
  */
 export const useResetPasswordSuccessManager = () => {
-  const { texts, data } = useScreen();
+  const { texts, data, links } = useScreen();
 
   return {
     resetPasswordSuccess: useResetPasswordSuccess(),
     texts: (texts || {}) as ScreenMembersOnResetPasswordSuccess["texts"],
     data: data || {},
+    links,
     locales,
   };
 };

@@ -6,14 +6,14 @@ import type {
   LoginPasswordOptions,
 } from "@auth0/auth0-acul-react/types";
 
+import { BrandButton } from "@/components/brand/BrandButton";
+import { ErrorBanner } from "@/components/brand/ErrorBanner";
+import { IdentityChip } from "@/components/brand/IdentityChip";
+import { PasswordInput } from "@/components/brand/PasswordInput";
+import { useFocusErrors } from "@/components/brand/useFocusErrors";
 import Captcha from "@/components/Captcha/index";
-import { ULThemeFloatingLabelField } from "@/components/form/ULThemeFloatingLabelField";
-import { ULThemeFormMessage } from "@/components/form/ULThemeFormMessage";
 import { Form, FormField, FormItem } from "@/components/ui/form";
-import { ULThemeButton } from "@/components/ULThemeButton";
-import { ULThemeAlert, ULThemeAlertTitle } from "@/components/ULThemeError";
 import ULThemeLink from "@/components/ULThemeLink";
-import { ULThemePasswordField } from "@/components/ULThemePasswordField";
 import { useCaptcha } from "@/hooks/useCaptcha";
 
 import { useLoginPasswordManager } from "../hooks/useLoginPasswordManager";
@@ -29,11 +29,17 @@ function LoginPasswordForm() {
     passwordPolicy,
     isCaptchaAvailable,
     handleLoginPassword,
+    loginPassword,
   } = useLoginPasswordManager();
 
+  const submittedUsername =
+    loginPassword.untrustedData?.submittedFormData?.username;
+  const username =
+    data?.username ||
+    (typeof submittedUsername === "string" ? submittedUsername : "");
   const form = useForm<LoginPasswordOptions>({
     defaultValues: {
-      username: data?.username || "",
+      username,
       password: "",
       captcha: "",
     },
@@ -62,6 +68,7 @@ function LoginPasswordForm() {
   );
 
   const { errors, hasError, dismiss } = useErrors();
+  const formRef = useFocusErrors(hasError);
 
   // Get field-specific SDK errors
   const passwordSDKError = errors.byField("password")[0]?.message;
@@ -83,48 +90,31 @@ function LoginPasswordForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
         {/* Display general errors */}
         {hasError && generalErrors.length > 0 && (
           <div className="space-y-3 mb-4">
             {generalErrors.map((error) => (
-              <ULThemeAlert
+              <ErrorBanner
                 key={error.id}
-                variant="destructive"
                 onDismiss={() => dismiss(error.id)}
-              >
-                <ULThemeAlertTitle>
-                  {error.message || locales?.errors?.errorOccurred}
-                </ULThemeAlertTitle>
-              </ULThemeAlert>
+                message={error.message || locales?.errors?.errorOccurred}
+              />
             ))}
           </div>
         )}
 
         {/* Username Identifier input field with pre-filled value */}
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field, fieldState }) => (
-            <FormItem>
-              <ULThemeFloatingLabelField
-                {...field}
-                label={""}
-                value={data?.username || ""}
-                error={!!fieldState.error}
-                readOnly={true}
-                endAdornment={
-                  <ULThemeLink href={editIdentifierLink || ""}>
-                    {texts?.editEmailText ||
-                      locales?.loginPasswordForm?.editText}
-                  </ULThemeLink>
-                }
-                className="pr-4"
-              />
-              <ULThemeFormMessage hasFormError={!!fieldState.error} />
-            </FormItem>
-          )}
-        />
+        <input type="hidden" {...form.register("username")} />
+        {username && (
+          <IdentityChip
+            identity={username}
+            editLink={editIdentifierLink}
+            editText={
+              texts?.editEmailText || locales.loginPasswordForm.editText
+            }
+          />
+        )}
 
         {/* Password input field */}
         <FormField
@@ -145,15 +135,13 @@ function LoginPasswordForm() {
           }}
           render={({ field, fieldState }) => (
             <FormItem>
-              <ULThemePasswordField
+              <PasswordInput
                 {...field}
                 label={passwordLabel}
                 autoFocus={true}
                 autoComplete="current-password"
                 error={!!fieldState.error || !!passwordSDKError}
-              />
-              <ULThemeFormMessage
-                sdkError={passwordSDKError}
+                errorMessage={passwordSDKError}
                 hasFormError={!!fieldState.error}
               />
             </FormItem>
@@ -186,9 +174,9 @@ function LoginPasswordForm() {
           </div>
         )}
 
-        <ULThemeButton type="submit" className="w-full" disabled={isSubmitting}>
+        <BrandButton type="submit" fullWidth loading={isSubmitting}>
           {continueButtonText}
-        </ULThemeButton>
+        </BrandButton>
       </form>
     </Form>
   );

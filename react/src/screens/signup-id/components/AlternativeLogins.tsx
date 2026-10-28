@@ -1,6 +1,5 @@
-import ULThemeSocialProviderButton from "@/components/ULThemeSocialProviderButton";
+import { SocialButton } from "@/components/brand/SocialButton";
 import type { SocialConnection } from "@/utils/helpers/socialUtils";
-import { getSocialProviderDetails } from "@/utils/helpers/socialUtils";
 
 import { useSignupIdManager } from "../hooks/useSignupIdManager";
 
@@ -30,16 +29,11 @@ const AlternativeLogins = () => {
           return null;
         }
 
-        const { displayName, iconComponent } =
-          getSocialProviderDetails(connection);
-        const socialButtonText = `${locales.social.continueWith} ${displayName}`;
-
         return (
-          <ULThemeSocialProviderButton
+          <SocialButton
             key={connection.name}
-            displayName={displayName}
-            buttonText={socialButtonText}
-            iconComponent={iconComponent}
+            connection={connection}
+            continueWith={locales.social.continueWith}
             onClick={() => handleConnectionSignup(connection)}
           />
         );

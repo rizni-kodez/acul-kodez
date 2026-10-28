@@ -1,5 +1,4 @@
-import ULThemeCard from "@/components/ULThemeCard";
-import ULThemePageLayout from "@/components/ULThemePageLayout";
+import { BrandLayout } from "@/components/brand/BrandLayout";
 import { applyAuth0Theme } from "@/utils/theme/themeEngine";
 
 import Footer from "./components/Footer";
@@ -11,20 +10,23 @@ function SignupPasswordScreen() {
   // Extracting attributes from hook made out of SignupPasswordInstance class of Auth0 React ACUL SDK
   const { signupPassword, texts, locales } = useSignupPasswordManager();
 
-  document.title = texts?.pageTitle || locales.page.title;
+  document.title = texts?.pageTitle || locales.pageTitle;
 
   // Apply theme from SDK instance when screen loads
   applyAuth0Theme(signupPassword);
 
   return (
     // Applying UDS theme overrides using the "theme-universal" class
-    <ULThemePageLayout className="theme-universal">
-      <ULThemeCard className="w-full max-w-[400px] gap-0">
-        <Header />
-        <SignupPasswordForm />
-        <Footer />
-      </ULThemeCard>
-    </ULThemePageLayout>
+    <BrandLayout
+      client={signupPassword.client}
+      organization={signupPassword.organization}
+      transaction={signupPassword.transaction}
+      logoAltText={texts?.logoAltText || locales.header.logoAlt}
+      footer={<Footer />}
+    >
+      <Header />
+      <SignupPasswordForm />
+    </BrandLayout>
   );
 }
 

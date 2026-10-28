@@ -43,6 +43,27 @@ describe("SignupPasswordScreen", () => {
     expect(screen.getByLabelText("Password*")).toBeInTheDocument();
   });
 
+  it("shows the submitted email when screen data does not contain it", async () => {
+    const originalScreen = (useScreen as jest.Mock)();
+    const originalInstance = (useSignupPassword as jest.Mock)();
+    (useScreen as jest.Mock).mockReturnValue({ ...originalScreen, data: null });
+    (useSignupPassword as jest.Mock).mockReturnValue({
+      ...originalInstance,
+      untrustedData: {
+        submittedFormData: { email: "demo.user@example.com" },
+      },
+    });
+
+    await renderScreen();
+    expect(screen.getByText("demo.user@example.com")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Edit" })).toHaveAttribute(
+      "href",
+      "/edit-identifier"
+    );
+    (useScreen as jest.Mock).mockReturnValue(originalScreen);
+    (useSignupPassword as jest.Mock).mockReturnValue(originalInstance);
+  });
+
   it("should show password validation rules with proper validation states", async () => {
     await renderScreen();
 

@@ -13,7 +13,7 @@ function Footer() {
   const backButtonText = texts?.backButtonText || locales.footer.backButton;
 
   return (
-    <div className="mt-4 text-center">
+    <div>
       {editLink && <ULThemeLink href={editLink}>{backButtonText}</ULThemeLink>}
     </div>
   );

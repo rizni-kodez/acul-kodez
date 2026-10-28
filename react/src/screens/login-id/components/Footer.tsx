@@ -3,14 +3,14 @@ import ULThemeLink from "@/components/ULThemeLink";
 import { useLoginIdManager } from "../hooks/useLoginIdManager";
 
 function Footer() {
-  const { signupLink, texts, locales } = useLoginIdManager();
+  const { signupLink, isSignupEnabled, texts, locales } = useLoginIdManager();
 
-  if (!signupLink) {
+  if (!signupLink || !isSignupEnabled) {
     return null;
   }
 
   return (
-    <div className="mt-4 text-left">
+    <div>
       <span className="pr-1 text-body-text text-(length:--ul-theme-font-body-text-size) font-body">
         {texts?.signupActionText || locales?.footer?.signupActionText}
       </span>

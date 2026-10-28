@@ -2,7 +2,7 @@
   "pageTitle": "Reset your password",
   "header": {
     "logoAlt": "Application Logo",
-    "title": "Forgot Your Password?"
+    "title": "Forgot your password?"
   },
   "form": {
     "fields": {
@@ -15,6 +15,6 @@
     "submittingState": "Verifying"
   },
   "footer": {
-    "backButton": "Back to My App"
+    "backButton": "Back to login"
   }
 }

@@ -1,6 +1,7 @@
 import {
   login,
   useErrors,
+  useLoginId,
   useLoginIdentifiers,
   useScreen,
   useTransaction,
@@ -35,6 +36,10 @@ describe("LoginIdScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockExtractTokenValue.mockReset();
+    (useTransaction as jest.Mock).mockReturnValue({
+      ...(useTransaction as jest.Mock)(),
+      isSignupEnabled: true,
+    });
   });
 
   beforeEach(() => {
@@ -143,6 +148,48 @@ describe("LoginIdScreen", () => {
         captcha: "mock-value",
       })
     );
+  });
+
+  it("prefills the login hint and hides signup when disabled", async () => {
+    const original = (useLoginId as jest.Mock)();
+    (useLoginId as jest.Mock).mockReturnValue({
+      ...original,
+      untrustedData: {
+        authorizationParams: { login_hint: "demo.user@example.com" },
+      },
+    });
+    (useTransaction as jest.Mock).mockReturnValue({
+      ...(useTransaction as jest.Mock)(),
+      isSignupEnabled: false,
+    });
+
+    await renderScreen();
+    expect(screen.getByLabelText(/username or email address/i)).toHaveValue(
+      "demo.user@example.com"
+    );
+    expect(screen.queryByRole("link", { name: /sign up/i })).toBeNull();
+    (useLoginId as jest.Mock).mockReturnValue(original);
+  });
+
+  it("keeps the submit button disabled until the SDK action settles", async () => {
+    let resolveLogin: () => void = () => undefined;
+    (login as jest.Mock).mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveLogin = resolve;
+      })
+    );
+    await renderScreen();
+    await ScreenTestUtils.fillInput(
+      /username or email address/i,
+      "test@example.com"
+    );
+    await ScreenTestUtils.fillInput("CAPTCHA", "mock-value");
+    await ScreenTestUtils.clickButton(/^continue$/i);
+    const button = screen.getByRole("button", { name: /^continue$/i });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+    await act(async () => resolveLogin());
+    expect(button).toBeEnabled();
   });
 
   it("should display general errors", async () => {

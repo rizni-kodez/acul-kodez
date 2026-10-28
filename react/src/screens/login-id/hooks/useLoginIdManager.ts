@@ -45,7 +45,7 @@ export const useLoginIdManager = () => {
       ...options,
     };
 
-    executeSafely(
+    await executeSafely(
       `Perform Login operation with options: ${JSON.stringify(logOptions)}`,
       () => loginId.login(options)
     );

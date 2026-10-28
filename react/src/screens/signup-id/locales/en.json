@@ -1,12 +1,13 @@
 {
+  "pageTitle": "Create your account",
   "page": {
-    "title": "Signup Identifier",
+    "title": "Create your account",
     "separator": "OR"
   },
   "header": {
     "logoAlt": "Application Logo",
-    "title": "Welcome",
-    "description": "Sign up to dev-tenant to continue to All applications."
+    "title": "Create your account",
+    "description": "Enter your details to get started."
   },
   "form": {
     "fields": {

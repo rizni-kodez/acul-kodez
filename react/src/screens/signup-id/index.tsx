@@ -1,5 +1,4 @@
-import ULThemeCard from "@/components/ULThemeCard";
-import ULThemePageLayout from "@/components/ULThemePageLayout";
+import { BrandLayout } from "@/components/brand/BrandLayout";
 import ULThemeSeparator from "@/components/ULThemeSeparator";
 import { extractTokenValue } from "@/utils/helpers/tokenUtils";
 import { applyAuth0Theme } from "@/utils/theme/themeEngine";
@@ -18,7 +17,7 @@ function SignupIdScreen() {
   const showSeparator = alternateConnections && alternateConnections.length > 0;
 
   const separatorText = texts?.separatorText || locales.page.separator;
-  document.title = texts?.pageTitle || locales.page.title;
+  document.title = texts?.pageTitle || locales.pageTitle;
 
   applyAuth0Theme(signupId);
 
@@ -40,15 +39,18 @@ function SignupIdScreen() {
 
   return (
     // Applying UDS theme overrides using the "theme-universal" class
-    <ULThemePageLayout className="theme-universal">
-      <ULThemeCard className="w-full max-w-[400px] gap-0">
-        <Header />
-        {socialLoginAlignment === "top" && renderSocialLogins("top")}
-        <SignupIdForm />
-        <Footer />
-        {socialLoginAlignment === "bottom" && renderSocialLogins("bottom")}
-      </ULThemeCard>
-    </ULThemePageLayout>
+    <BrandLayout
+      client={signupId.client}
+      organization={signupId.organization}
+      transaction={signupId.transaction}
+      logoAltText={texts?.logoAltText || locales.header.logoAlt}
+      footer={<Footer />}
+    >
+      <Header />
+      {socialLoginAlignment === "top" && renderSocialLogins("top")}
+      <SignupIdForm />
+      {socialLoginAlignment === "bottom" && renderSocialLogins("bottom")}
+    </BrandLayout>
   );
 }
 

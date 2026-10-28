@@ -19,6 +19,7 @@ import locales from "../locales/en.json";
 
 export const useResetPasswordRequestManager = () => {
   const { texts, captchaImage, isCaptchaAvailable } = useScreen();
+  const untrustedData = useUntrustedData();
 
   const handleResetPasswordRequest = async (
     username: string,
@@ -54,7 +55,10 @@ export const useResetPasswordRequestManager = () => {
     captcha: useScreen().captcha || null,
     activeIdentifiers: useLoginIdentifiers(),
     useErrors: useErrors(),
-    inputfield: useUntrustedData().submittedFormData?.username || "",
+    inputfield:
+      untrustedData.submittedFormData?.username ||
+      untrustedData.submittedFormData?.email ||
+      "",
     locales,
   };
 };

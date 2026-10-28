@@ -1,4 +1,7 @@
-import { useScreen } from "@auth0/auth0-acul-react/reset-password-success";
+import {
+  useErrors,
+  useScreen,
+} from "@auth0/auth0-acul-react/reset-password-success";
 import { render, screen } from "@testing-library/react";
 
 import ResetPasswordSuccessScreen from "../index";
@@ -21,6 +24,29 @@ describe("ResetPasswordSuccessScreen", () => {
     render(<ResetPasswordSuccessScreen />);
 
     expect(document.title).toBe("Password Reset Complete");
+  });
+
+  it("shows context-provided login links and focuses general errors", () => {
+    const originalScreen = (useScreen as jest.Mock)();
+    const originalErrors = (useErrors as jest.Mock)();
+    (useScreen as jest.Mock).mockReturnValue({
+      ...originalScreen,
+      links: { login: "/login-from-context" },
+    });
+    (useErrors as jest.Mock).mockReturnValue({
+      errors: {
+        byType: () => [{ id: "error", message: "Please try again." }],
+      },
+      hasError: true,
+      dismiss: jest.fn(),
+    });
+    render(<ResetPasswordSuccessScreen />);
+    expect(
+      screen.getByRole("link", { name: "Continue to login" })
+    ).toHaveAttribute("href", "/login-from-context");
+    expect(screen.getByRole("alert")).toHaveFocus();
+    (useScreen as jest.Mock).mockReturnValue(originalScreen);
+    (useErrors as jest.Mock).mockReturnValue(originalErrors);
   });
 
   it("sets fallback title when texts is missing", () => {

@@ -30,8 +30,8 @@ export const useResetPasswordManager = () => {
       "password-reset": new_password?.trim() || "",
       "re-enter-password": confirm_password?.trim() || "",
     };
-    executeSafely(
-      `Submit password reset with options: ${JSON.stringify(options)}`,
+    await executeSafely(
+      "Submit password reset with password values redacted",
       () => resetPassword(options)
     );
   };

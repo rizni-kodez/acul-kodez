@@ -1,5 +1,4 @@
-import ULThemeCard from "@/components/ULThemeCard";
-import ULThemePageLayout from "@/components/ULThemePageLayout";
+import { BrandLayout } from "@/components/brand/BrandLayout";
 import { applyAuth0Theme } from "@/utils/theme";
 
 import Header from "./components/Header";
@@ -16,12 +15,15 @@ function ResetPasswordScreen() {
 
   return (
     // Applying UDS theme overrides using the "theme-universal" class
-    <ULThemePageLayout className="theme-universal">
-      <ULThemeCard className="w-full max-w-[400px] gap-0">
-        <Header />
-        <ResetPasswordForm />
-      </ULThemeCard>
-    </ULThemePageLayout>
+    <BrandLayout
+      client={resetPassword.client}
+      organization={resetPassword.organization}
+      transaction={resetPassword.transaction}
+      logoAltText={texts?.logoAltText || locales.header.logoAltText}
+    >
+      <Header />
+      <ResetPasswordForm />
+    </BrandLayout>
   );
 }
 

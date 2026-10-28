@@ -1,11 +1,12 @@
 {
+    "pageTitle": "Enter your password",
     "page": {
-        "title": "Login Password",
+        "title": "Enter your password",
         "orText": "OR"
     },
     "heading": {
-        "title": "Welcome",
-        "description": "Enter your password for My Company to continue to My App",
+        "title": "Enter your password",
+        "description": "Enter your password to continue.",
         "logoAltText": "Application Logo"
     },
     "footer": {

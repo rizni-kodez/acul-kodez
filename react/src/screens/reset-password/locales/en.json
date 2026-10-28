@@ -2,8 +2,8 @@
     "pageTitle": "Reset your password",
     "header": {
         "logoAltText": "Application Logo",
-        "title": "Change Your Password",
-        "description": "Enter a new password below to change your password."
+        "title": "Choose a new password",
+        "description": "Enter and confirm your new password."
     },
     "form": {
         "fields": {

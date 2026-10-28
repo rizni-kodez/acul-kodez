@@ -1,11 +1,12 @@
 {
+  "pageTitle": "Create your account",
   "page": {
     "title": "Create Your Account"
   },
   "header": {
     "logoAlt": "Application Logo",
     "title": "Create Your Account",
-    "description": "Set your password for dev-xyz to continue to my application"
+    "description": "Set your password to continue."
   },
   "form": {
     "fields": {
@@ -30,6 +31,7 @@
       }
     },
     "button": "Continue",
+    "edit": "Edit",
     "passwordSecurity": "Your password must contain:"
   },
   "footer": {

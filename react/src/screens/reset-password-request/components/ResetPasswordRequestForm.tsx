@@ -5,14 +5,12 @@ import type {
   ResetPasswordRequestOptions,
 } from "@auth0/auth0-acul-react/types";
 
+import { BrandButton } from "@/components/brand/BrandButton";
+import { BrandInput } from "@/components/brand/BrandInput";
+import { ErrorBanner } from "@/components/brand/ErrorBanner";
+import { useFocusErrors } from "@/components/brand/useFocusErrors";
 import Captcha from "@/components/Captcha/index";
-import {
-  ULThemeFloatingLabelField,
-  ULThemeFormMessage,
-} from "@/components/form";
 import { Form, FormField, FormItem } from "@/components/ui/form";
-import { ULThemeButton } from "@/components/ULThemeButton";
-import { ULThemeAlert, ULThemeAlertTitle } from "@/components/ULThemeError";
 import { useCaptcha } from "@/hooks/useCaptcha";
 import { getIdentifierDetails } from "@/utils/helpers/identifierUtils";
 
@@ -29,6 +27,7 @@ function ResetPasswordRequestForm() {
     inputfield,
   } = useResetPasswordRequestManager();
   const { errors, hasError, dismiss } = useErrors;
+  const formRef = useFocusErrors(hasError);
 
   // Initialize the form using react-hook-form
   const form = useForm<ResetPasswordRequestOptions>({
@@ -68,18 +67,16 @@ function ResetPasswordRequestForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
         {/* General error messages */}
         {hasError && generalErrors.length > 0 && (
           <div className="space-y-3 mb-4">
             {generalErrors.map((error) => (
-              <ULThemeAlert
+              <ErrorBanner
                 key={error.id}
-                variant="destructive"
                 onDismiss={() => dismiss(error.id)}
-              >
-                <ULThemeAlertTitle>{error.message}</ULThemeAlertTitle>
-              </ULThemeAlert>
+                message={error.message}
+              />
             ))}
           </div>
         )}
@@ -90,7 +87,7 @@ function ResetPasswordRequestForm() {
           name="username"
           render={({ field, fieldState }) => (
             <FormItem>
-              <ULThemeFloatingLabelField
+              <BrandInput
                 {...field}
                 label={identifierDetails.label}
                 type={identifierDetails.type}
@@ -98,9 +95,7 @@ function ResetPasswordRequestForm() {
                 autoComplete={identifierDetails.autoComplete}
                 autoFocus
                 error={!!fieldState.error || !!usernameSDKError}
-              />
-              <ULThemeFormMessage
-                sdkError={usernameSDKError}
+                errorMessage={usernameSDKError}
                 hasFormError={!!fieldState.error}
               />
             </FormItem>
@@ -123,14 +118,14 @@ function ResetPasswordRequestForm() {
         )}
 
         {/* Submit button */}
-        <ULThemeButton
+        <BrandButton
           type="submit"
           variant="primary"
-          className="w-full"
-          disabled={isSubmitting}
+          fullWidth
+          loading={isSubmitting}
         >
           {isSubmitting ? `${locales.form.submittingState}...` : buttonText}
-        </ULThemeButton>
+        </BrandButton>
       </form>
     </Form>
   );

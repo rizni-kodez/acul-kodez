@@ -1,8 +1,9 @@
 {
   "pageTitle": "Check your email",
   "header": {
+    "logoAlt": "Application logo",
     "title": "Check Your Email",
-    "description": "Please check the email address {{email}} for instructions to reset your password."
+    "description": "Check {{email}} for a link to reset your password."
   },
   "button": {
     "resendText": "Resend email"

@@ -1,7 +1,8 @@
 import type { ErrorItem } from "@auth0/auth0-acul-react/types";
 
-import { ULThemeButton } from "@/components/ULThemeButton";
-import { ULThemeAlert, ULThemeAlertTitle } from "@/components/ULThemeError";
+import { BrandButton } from "@/components/brand/BrandButton";
+import { ErrorBanner } from "@/components/brand/ErrorBanner";
+import { useFocusErrors } from "@/components/brand/useFocusErrors";
 
 import { useResetPasswordEmailManager } from "../hooks/useResetPasswordEmailManager";
 
@@ -10,6 +11,7 @@ function ResendEmail() {
   const { texts, handleResendEmail, useErrors, locales } =
     useResetPasswordEmailManager();
   const { errors, hasError, dismiss } = useErrors;
+  const formRef = useFocusErrors(hasError);
   const buttonText = texts?.resendLinkText || locales.button.resendText;
 
   // Extract general errors (not field-specific) from the SDK
@@ -19,30 +21,28 @@ function ResendEmail() {
     }) || [];
 
   return (
-    <>
+    <form ref={formRef}>
       {/* General error messages */}
       {hasError && generalErrors.length > 0 && (
         <div className="space-y-3 mb-4">
           {generalErrors.map((error) => (
-            <ULThemeAlert
+            <ErrorBanner
               key={error.id}
-              variant="destructive"
               onDismiss={() => dismiss(error.id)}
-            >
-              <ULThemeAlertTitle>{error.message}</ULThemeAlertTitle>
-            </ULThemeAlert>
+              message={error.message}
+            />
           ))}
         </div>
       )}
-      <ULThemeButton
+      <BrandButton
         variant="outline"
         type="button"
-        className="w-full"
+        fullWidth
         onClick={handleResendEmail}
       >
         {buttonText}
-      </ULThemeButton>
-    </>
+      </BrandButton>
+    </form>
   );
 }
 export default ResendEmail;

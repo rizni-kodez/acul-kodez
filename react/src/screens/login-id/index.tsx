@@ -1,5 +1,5 @@
-import ULThemeCard from "@/components/ULThemeCard";
-import ULThemePageLayout from "@/components/ULThemePageLayout";
+import { BrandLayout } from "@/components/brand/BrandLayout";
+import { StepIndicator } from "@/components/brand/StepIndicator";
 import ULThemeSeparator from "@/components/ULThemeSeparator";
 import { extractTokenValue } from "@/utils/helpers/tokenUtils";
 import { applyAuth0Theme } from "@/utils/theme/themeEngine";
@@ -22,7 +22,7 @@ function LoginIdScreen() {
 
   // Other Texts
   const separatorText = texts?.separatorText || locales?.page?.orText;
-  document.title = texts?.pageTitle || locales?.page?.title;
+  document.title = texts?.pageTitle || locales.pageTitle;
 
   applyAuth0Theme(loginId);
 
@@ -45,15 +45,19 @@ function LoginIdScreen() {
 
   return (
     // Applying UDS theme overrides using the "theme-universal" class
-    <ULThemePageLayout className="theme-universal">
-      <ULThemeCard className="w-full max-w-[400px] gap-0">
-        <Header />
-        {socialLoginAlignment === "top" && renderSocialLogins("top")}
-        <LoginIdForm />
-        <Footer />
-        {socialLoginAlignment === "bottom" && renderSocialLogins("bottom")}
-      </ULThemeCard>
-    </ULThemePageLayout>
+    <BrandLayout
+      client={loginId.client}
+      organization={loginId.organization}
+      transaction={loginId.transaction}
+      logoAltText={texts?.logoAltText || locales.heading.logoAltText}
+      footer={<Footer />}
+    >
+      <StepIndicator step={1} total={2} />
+      <Header />
+      {socialLoginAlignment === "top" && renderSocialLogins("top")}
+      <LoginIdForm />
+      {socialLoginAlignment === "bottom" && renderSocialLogins("bottom")}
+    </BrandLayout>
   );
 }
 

@@ -11,13 +11,13 @@ import type {
   LoginOptions,
 } from "@auth0/auth0-acul-react/types";
 
+import { BrandButton } from "@/components/brand/BrandButton";
+import { BrandInput } from "@/components/brand/BrandInput";
+import { ErrorBanner } from "@/components/brand/ErrorBanner";
+import { useFocusErrors } from "@/components/brand/useFocusErrors";
 import Captcha from "@/components/Captcha/index";
-import { ULThemeFloatingLabelField } from "@/components/form/ULThemeFloatingLabelField";
-import { ULThemeFormMessage } from "@/components/form/ULThemeFormMessage";
 import { Form, FormField, FormItem } from "@/components/ui/form";
-import { ULThemeButton } from "@/components/ULThemeButton";
 import ULThemeCountryCodePicker from "@/components/ULThemeCountryCodePicker";
-import { ULThemeAlert, ULThemeAlertTitle } from "@/components/ULThemeError";
 import ULThemeLink from "@/components/ULThemeLink";
 import { useCaptcha } from "@/hooks/useCaptcha";
 import {
@@ -27,6 +27,11 @@ import {
 import { getIdentifierDetails } from "@/utils/helpers/identifierUtils";
 
 import { useLoginIdManager } from "../hooks/useLoginIdManager";
+
+function PasskeyAutofill() {
+  usePasskeyAutofill();
+  return null;
+}
 
 function LoginIdForm() {
   const {
@@ -41,6 +46,7 @@ function LoginIdForm() {
     showPasskeyAutofill,
     handleLoginId,
     handlePickCountryCode,
+    loginId,
   } = useLoginIdManager();
 
   const activeIdentifiers = useLoginIdentifiers();
@@ -53,7 +59,7 @@ function LoginIdForm() {
 
   const form = useForm<LoginOptions>({
     defaultValues: {
-      username: "",
+      username: loginId.untrustedData?.authorizationParams?.login_hint || "",
       captcha: "",
     },
     reValidateMode: "onBlur",
@@ -77,14 +83,8 @@ function LoginIdForm() {
     captchaLabel
   );
 
-  // Enable passkey autofill for identifier field if supported
-  // Only register autofill when showPasskeyAutofill is true
-  if (isPasskeyEnabled && showPasskeyAutofill) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    usePasskeyAutofill();
-  }
-
   const { errors, hasError, dismiss } = useErrors();
+  const formRef = useFocusErrors(hasError);
 
   // Get field-specific SDK errors
   const usernameSDKError = errors.byField("username")[0]?.message;
@@ -109,20 +109,17 @@ function LoginIdForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
+        {isPasskeyEnabled && showPasskeyAutofill && <PasskeyAutofill />}
         {/* Display general errors */}
         {hasError && generalErrors.length > 0 && (
           <div className="space-y-3 mb-4">
             {generalErrors.map((error) => (
-              <ULThemeAlert
+              <ErrorBanner
                 key={error.id}
-                variant="destructive"
                 onDismiss={() => dismiss(error.id)}
-              >
-                <ULThemeAlertTitle>
-                  {error.message || locales?.errors?.errorOccurred}
-                </ULThemeAlertTitle>
-              </ULThemeAlert>
+                message={error.message || locales?.errors?.errorOccurred}
+              />
             ))}
           </div>
         )}
@@ -151,16 +148,14 @@ function LoginIdForm() {
           }}
           render={({ field, fieldState }) => (
             <FormItem>
-              <ULThemeFloatingLabelField
+              <BrandInput
                 {...field}
                 label={identifierDetails.label}
                 type={identifierDetails.type}
                 autoComplete={identifierDetails.autoComplete}
                 autoFocus
                 error={!!fieldState.error || !!usernameSDKError}
-              />
-              <ULThemeFormMessage
-                sdkError={usernameSDKError}
+                errorMessage={usernameSDKError}
                 hasFormError={!!fieldState.error}
               />
             </FormItem>
@@ -189,9 +184,9 @@ function LoginIdForm() {
           </div>
         )}
 
-        <ULThemeButton type="submit" className="w-full" disabled={isSubmitting}>
+        <BrandButton type="submit" fullWidth loading={isSubmitting}>
           {continueButtonText}
-        </ULThemeButton>
+        </BrandButton>
       </form>
     </Form>
   );
