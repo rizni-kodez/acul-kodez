@@ -1,405 +1,66 @@
-# Auth0 Advanced Customizations for Universal Login Samples
-
-This monorepo provides production-ready templates for creating custom Auth0 Advanced Customizations for Universal Login (ACUL) screens. Each sample demonstrates different implementation approaches and SDK integrations while following Auth0's design language and user experience patterns.
-
-**What is ACUL?** Advanced Customizations for Universal Login (ACUL) allows you to build custom, client-rendered versions of Universal Login screens, giving you complete control over your authentication experience. ACUL uses a client/server model where you have full control over the client-side interface while leveraging the security, extensibility, and flexibility of Universal Login's hosted authentication on the server side.
-
-> **⚠️ Important Notes**
->
-> - **Enterprise Feature**: Requires Enterprise Auth0 plan and verified custom domain
-
-## Available Samples
-
-### [React-JS Sample](./react-js/)
-- **SDK**: Auth0 ACUL JS SDK (`@auth0/auth0-acul-js`)
-- **Screens**: 3 authentication screens
-  - Login (universal login)
-  - Login-ID (identifier-first flow)
-  - Login-Password (password entry)
-- **Tech Stack**: React 19, TypeScript, Vite, Tailwind CSS
-- **Development**: Integrated context inspector for real-time debugging
-
-<table>
-  <tr>
-    <td width="50%" align="center">
-      <img 
-        src="https://cdn.auth0.com/website/acul-samples/login-id-with-ulx-context.png" 
-        alt="Login ID Screen with mock data"
-        width="100%" />
-      <br />
-      <sub><em>Login-id screen local development with ul-context-inspector</em></sub>
-    </td>
-    <td width="50%" align="center">
-      <img 
-        src="https://cdn.auth0.com/website/acul-samples/login-id-prod.png" 
-        alt="Login ID Screen deployed with ACUL"
-        width="100%" />
-      <br />
-      <sub><em>Login-id screen production deployment with ACUL</em></sub>
-    </td>
-  </tr>
-</table>
-
-
-### [React Sample](./react/)
-- **SDK**: Auth0 ACUL React SDK (`@auth0/auth0-acul-react`)
-- **Screens**: 31 authentication screens
-  - **Login & Authentication (5)**: Login, Login-ID, Login-Password, Login-Passwordless-Email-Code, Login-Passwordless-SMS-OTP
-  - **Signup & Registration (3)**: Signup, Signup-ID, Signup-Password
-  - **Password Reset (4)**: Reset-Password-Request, Reset-Password-Email, Reset-Password, Reset-Password-Error
-  - **Multi-Factor Authentication (15)**: MFA-Begin-Enroll-Options, MFA-Country-Codes, MFA-Email-Challenge, MFA-Email-List, MFA-Enroll-Result, MFA-Login-Options, MFA-Push-Challenge-Push, MFA-Push-Enrollment-QR, MFA-Push-List, MFA-Push-Welcome, MFA-SMS-Challenge, MFA-SMS-Enrollment, MFA-SMS-List, MFA-WebAuthn-Platform-Challenge, MFA-WebAuthn-Platform-Enrollment
-  - **Passkeys (2)**: Passkey-Enrollment, Passkey-Enrollment-Local
-  - **Identifier Management (2)**: Email-Identifier-Challenge, Phone-Identifier-Challenge
-- **Tech Stack**: React 19, TypeScript, Vite, Tailwind CSS
-- **Development**: Integrated context inspector for real-time debugging
-
-<table>
-  <tr>
-    <td width="50%" align="center">
-      <img 
-        src="https://cdn.auth0.com/website/acul-samples/signup-with-ulx-context.png" 
-        alt="Signup Screen with mock data"
-        width="100%" />
-      <br />
-      <sub><em>Signup screen local development with ul-context-inspector</em></sub>
-    </td>
-    <td width="50%" align="center">
-      <img 
-        src="https://cdn.auth0.com/website/acul-samples/signup-prod.png" 
-        alt="Signup Screen deployed with ACUL"
-        width="100%" />
-      <br />
-      <sub><em>Signup screen production deployment with ACUL</em></sub>
-    </td>
-  </tr>
-</table>
-
-## Table of Contents
-
-- [Quick Start](#quick-start)
-- [Development with ul-context-inspector](#development-with-ul-context-inspector)
-- [Prerequisites](#prerequisites)
-- [Screens](#screens)
-- [Build Structure](#build-structure)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [Documentation](#documentation)
-- [Troubleshooting](#troubleshooting)
-
-<a id="quick-start"></a>
-
-## Quick Start
-
-### React-JS Sample (Auth0 ACUL JS SDK)
-
-```bash
-# Navigate to the React-JS sample
-cd react-js
-
-# Install dependencies
-npm install
-
-# Start development server with context inspector
-npm run dev  # Opens http://localhost:3000
-```
+# acul-kodez - Auth0 Advanced Customizations for Universal Login (ACUL) demo
 
-The development server includes an integrated context inspector that lets you visualize and edit the Auth0 Universal Login context in real-time, switch between screens, and test different scenarios.
+Branded Auth0 login screens built on Auth0's official ACUL React sample
+(auth0-samples/auth0-acul-samples, kept as git remote "upstream").
+Customised screens: login-id, login-password, signup-id, signup-password,
+reset-password-request, reset-password-email, reset-password, reset-password-success.
+Brand tokens live in react/src/brand/.
 
-<a id="development-with-ul-context-inspector"></a>
+## 1. Run locally (no Auth0 tenant needed)
 
-## Development with ul-context-inspector
+Prerequisites: Node.js 22+.
 
-`ul-context-inspector` is a developer panel that simulates Auth0's Universal Login context using local mock data, enabling development without an Enterprise Auth0 tenant.
+    git clone https://github.com/rizni-kodez/acul-kodez.git
+    cd acul-kodez/react
+    npm install
+    npm run dev
 
-**How it works:**
-- **Development**: Loads mock JSON from `public/screens/` → No Auth0 connection needed
-- **Production**: Uses real Auth0 context from `window.universal_login_context`
+Open the URL Vite prints (normally http://localhost:3000). The Universal Login
+Context Inspector panel lets you switch screens and mock data. In dev mode the
+submit buttons only log "[DEV ONLY] ..." to the browser console; nothing is sent to Auth0.
 
-### Creating Local Mocks
+Things to look at:
+- react/public/screens/login-id/login-id/default.json - the mock context (what Auth0 puts on the page). Change client.name and watch the screen update.
+- react/src/screens/login-id/hooks/useLoginIdManager.ts - the SDK action loginId.login({ username }) is the whole submit.
+- react/src/brand/brand.ts and brand.css - change colours here only.
 
-1. Add screen mocks in `public/screens/{prompt}/{screen}/`:
-   - `default.json` - Default state
-   - `with-errors.json` - Error state
+## 2. Test against a real Auth0 tenant (connected mode)
 
-2. Register in `public/manifest.json`:
-```json
-{
-  "versions": ["v2", "v0"],
-  "screens": [
-    {
-      "login": {
-        "login": {
-          "path": "/screens/login/login",
-          "variants": ["default", "with-errors"]
-        }
-      }
-    }
-  ]
-}
-```
+Requirements: Auth0 tenant on a paid plan, Universal Login (new experience),
+a verified custom domain, Identifier First enabled, Auth0 CLI installed
+(brew tap auth0/auth0-cli && brew install auth0). Use a DEV tenant only.
 
-3. Run `npm run dev` - screens appear in the inspector automatically!
+    auth0 login
+    auth0 api patch prompts --data '{"identifier_first": true}'
+    cd acul-kodez/react
+    auth0 acul dev --connected --screens login-id,login-password
 
-<a id="prerequisites"></a>
+Answers: proceed = y, port = 55444, host with npx serve = Yes, build:watch = N.
 
-## Prerequisites
+Connected mode patches the tenant only when it detects a change, so in a second
+terminal run "npm run build" once; the first terminal must show "Assets patched successfully". Then:
 
-**For Local Development:**
+    auth0 acul config get login-id --file /tmp/login-id.json
+    auth0 test login --domain YOUR-CUSTOM-DOMAIN --connection-name Username-Password-Authentication
 
-- Node.js version 22+ (`node -v` to check)
+rendering_mode in the downloaded file must be "advanced". Log in: login-id and
+login-password are the custom screens; all other screens stay Auth0's standard UI.
 
-**For Production Use:**
+## 3. Roll back (always, before you leave)
 
-- Auth0 tenant with verified custom domain
-- Enterprise Auth0 plan (for ACUL access)
+    for s in login-id login-password; do auth0 acul config set $s --data '{"rendering_mode":"standard"}'; done
+    auth0 acul config list
 
-> **Open Source Contributors:** You can explore and contribute to this codebase without needing an Auth0 Enterprise plan using the development context inspector.
+## 4. Build for a CDN
 
-<details>
-<summary>Need to install Node.js?</summary>
+    cd react && npm run build && ls dist/assets
 
-We recommend using NVM (Node Version Manager):
+Upload dist/ to a public CDN with CORS enabled and reference the hashed files in
+each screen's rendering configuration (head_tags). Every script/css tag needs an
+integrity hash: openssl dgst -sha256 -binary FILE | openssl base64 -A (prefix sha256-).
 
-- macOS/Linux: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash`
-- Windows: Install [nvm-windows](https://github.com/coreybutler/nvm-windows)
+## Notes
 
-```bash
-nvm install 22
-nvm use 22
-```
-
-</details>
-
-### Testing with Real Auth0
-
-Once you're ready to test with actual Auth0 authentication:
-
-```bash
-# Navigate to the React-JS sample
-cd react-js
-
-# Build and serve assets locally
-npm run build
-npx serve dist -p 8080 --cors
-
-# Install Auth0 CLI and configure (Enterprise tenants only)
-npm install -g @auth0/auth0-cli
-auth0 login
-
-# Configure ACUL with settings file
-auth0 ul customize --rendering-mode advanced --prompt login-id --screen login-id --file ./settings.json
-```
-
-**About settings.json:** This file contains the same ACUL payload configuration as shown in the [Build Structure](#build-structure) section. It defines how Auth0 should load your custom screen assets, including CSS files, JavaScript bundles, and context configuration. The settings.json file structure is identical to the payload you'd use when configuring ACUL programmatically.
-
-> **⚠️ Use development/testing tenants only**
-
-<a id="screens"></a>
-
-## Screens
-
-The main screen implementations are located in:
-
-- **React-JS Sample**: [`react-js/src/screens/`](./react-js/src/screens/) - 3 screens
-- **React Sample**: [`react/src/screens/`](./react/src/screens/) - 31 screens
-
-Each screen is designed to integrate with the [Auth0 ACUL SDK](https://github.com/auth0/universal-login).
-
-<a id="build-structure"></a>
-
-## Build Structure
-
-**About manifest.json:** The `manifest.json` file at the project root defines the available templates and screens for the `auth0-cli` tool, enabling developers to scaffold projects with `auth0 acul init` by specifying which files and directories to include for each framework and screen combination.
-
-Vite compiles each screen as a separate entry point for optimized loading:
-
-```bash
-# Navigate to the React or React-JS sample
-cd react  # or cd react-js
-
-# Build optimized assets
-npm run build
-
-# Serve locally for testing
-npx serve dist -p 8080 --cors
-```
-
-**Output Structure:**
-
-```
-dist/
-├── index.html                           # Main entry point
-└── assets/
-    ├── main.[hash].js                   # Main application bundle
-    ├── shared/
-    │   ├── style.[hash].css             # Global styles (Tailwind + Auth0 theme)
-    │   ├── react-vendor.[hash].js       # React + ReactDOM (~324 kB)
-    │   ├── vendor.[hash].js             # Third-party dependencies (~196 kB)
-    │   └── common.[hash].js             # Shared app code (~87 kB)
-    └── [screen-name]/
-        └── index.[hash].js              # Screen-specific code (0.9-6 kB)
-```
-
-**Bundle Strategy:**
-- **react-vendor**: Contains React and ReactDOM for better caching across deploys
-- **vendor**: Contains all other third-party packages (captcha providers, utilities)
-- **common**: Shared application code (components, hooks, utilities)
-- **Screen bundles**: Only screen-specific logic, optimized for fast loading
-
-Screen-specific bundles can be deployed independently for incremental rollouts.
-
-<details>
-<summary>ACUL Payload Configuration Example (settings.json)</summary>
-
-When configuring Auth0 ACUL for a specific screen, your settings.json file will reference the built assets:
-
-```json
-{
-  "rendering_mode": "advanced",
-  "context_configuration": [
-    "branding.settings",
-    "branding.themes.default",
-    "screen.texts"
-  ],
-  "default_head_tags_disabled": false,
-  "head_tags": [
-    {
-      "tag": "base",
-      "attributes": {
-        "href": "https://your-cdn-domain.com/"
-      }
-    },
-    {
-      "tag": "meta",
-      "attributes": {
-        "name": "viewport",
-        "content": "width=device-width, initial-scale=1"
-      }
-    },
-    {
-      "tag": "link",
-      "attributes": {
-        "rel": "stylesheet",
-        "href": "https://your-cdn-domain.com/assets/shared/style.[hash].css"
-      }
-    },
-    {
-      "tag": "script",
-      "attributes": {
-        "src": "https://your-cdn-domain.com/assets/main.[hash].js",
-        "type": "module"
-      }
-    },
-    {
-      "tag": "script",
-      "attributes": {
-        "src": "https://your-cdn-domain.com/assets/shared/react-vendor.[hash].js",
-        "type": "module"
-      }
-    },
-    {
-      "tag": "script",
-      "attributes": {
-        "src": "https://your-cdn-domain.com/assets/shared/vendor.[hash].js",
-        "type": "module"
-      }
-    },
-    {
-      "tag": "script",
-      "attributes": {
-        "src": "https://your-cdn-domain.com/assets/shared/common.[hash].js",
-        "type": "module"
-      }
-    },
-    {
-      "tag": "script",
-      "attributes": {
-        "src": "https://your-cdn-domain.com/assets/login-id/index.[hash].js",
-        "type": "module"
-      }
-    }
-  ]
-}
-```
-
-Reference these built assets in your Auth0 ACUL configuration.
-
-</details>
-
-<a id="deployment"></a>
-
-## Deployment
-
-This repository includes GitHub Actions workflows for automated deployment. See [DEPLOYMENT.md](./react/DEPLOYMENT.md) for complete setup instructions.
-
-<details>
-<summary>Enabling Screens for Deployment</summary>
-
-Control which screens are deployed by modifying [`react/.github/config/deploy_config.yml`](./react/.github/config/deploy_config.yml):
-
-```yaml
-default_screen_deployment_status:
-  "login-id": true # Enable for deployment
-  "signup": false # Disable for deployment
-```
-
-</details>
-
-<a id="contributing"></a>
-
-## Contributing
-
-We welcome contributions! Here's how you can help:
-
-**Getting Started:**
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Make your changes using the development server: `npm run dev`
-4. Test thoroughly: `npm test`
-5. Submit a pull request
-
-**What to Contribute:**
-
-- Bug fixes and improvements
-- Documentation updates
-- Test coverage improvements
-- Component enhancements
-
-**Development Guidelines:**
-
-- Follow the existing code patterns in `react-js/src/screens/` or `react/src/screens/`
-- Use TypeScript for type safety
-- Follow the Auth0 design system principles
-- Include tests for new functionality
-- Use `npm run dev` to start the development server with context inspector
-
-<a id="documentation"></a>
-
-## Documentation
-
-- **[Auth0 ACUL Documentation](https://auth0.com/docs/customize/login-pages/advanced-customizations)** - Official ACUL guide
-
-<a id="troubleshooting"></a>
-
-## Troubleshooting
-
-### Common Issues
-
-<details>
-<summary>Screen not loading or showing blank page</summary>
-
-**Symptoms:** Browser shows blank page or loading spinner
-**Solutions:**
-
-1. Check browser console for JavaScript errors
-2. Ensure all dependencies installed: `npm install`
-3. Try clearing browser cache and restarting dev server: `npm run dev`
-</details>
-
-### Getting Help
-
-- **Bug Reports:** [Create an issue](https://github.com/auth0-samples/auth0-acul-samples/issues/new) with reproduction steps
-- **Community Discussion:** [Auth0 Community Forum](https://community.auth0.com/)
-- **Documentation:** [Auth0 ACUL Docs](https://auth0.com/docs/customize/login-pages/advanced-customizations)
-- **Feature Requests:** [Open a discussion](https://github.com/auth0-samples/auth0-acul-samples/discussions)
+- Commit messages follow conventional commits (feat: ..., fix: ..., max 72 chars) - enforced by a git hook.
+- docs/ACUL_DEMO_CUSTOMIZATION_SPEC.md is the brief the screens were built from.
+- Auth0 docs: https://auth0.com/docs/customize/login-pages/advanced-customizations
